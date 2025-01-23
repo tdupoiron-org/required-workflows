@@ -2,7 +2,6 @@ name: PR Description Update
 
 on:
   pull_request:
-    types: [edited]
 
 jobs:
   pr-edited:
