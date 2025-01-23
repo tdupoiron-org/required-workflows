@@ -1,0 +1,16 @@
+name: PR Description Update
+
+on:
+  pull_request:
+    types: [edited]
+
+jobs:
+  pr-edited:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Print Hello World
+      run: echo "The PR was edited"
