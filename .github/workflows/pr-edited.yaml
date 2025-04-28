@@ -28,7 +28,7 @@ jobs:
           
           // Only try to access label information if this is a labeled event
           if (context.eventName === 'pull_request' && context.payload.action === 'labeled') {
-            const label = context.payload.label.name;
+            const label = context.payload.label ? context.payload.label.name : null;
             console.log('Label added:', label);
             
             if (label === 'security') {
