@@ -1,0 +1,21 @@
+name: PR Security Auto-Assign
+
+on:
+  pull_request:
+    types: [labeled]
+
+jobs:
+  auto-assign:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Auto-assign PR
+        if: github.event.label.name == 'security'  # You can change this label name
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addAssignees({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              assignees: ['tdupoiron']  # Replace with your GitHub username
+            })
