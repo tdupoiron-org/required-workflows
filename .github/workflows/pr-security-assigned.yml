@@ -7,27 +7,22 @@ on:
 jobs:
   auto-assign:
     runs-on: ubuntu-latest
-    # Enable debug logging
     env:
       ACTIONS_RUNNER_DEBUG: true
       ACTIONS_STEP_DEBUG: true
     steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
-        run: echo "$GITHUB_CONTEXT"
-        
-      - name: Dump event payload
-        env:
-          EVENT_PAYLOAD: ${{ toJSON(github.event) }}
-        run: echo "$EVENT_PAYLOAD"
-
       - name: Auto-assign PR
         if: github.event.label.name == 'security'
         uses: actions/github-script@v7.0.1
         with:
           script: |
-            console.log('Current label:', github.event.label.name);
+            console.log('Debug - Event context:', {
+              label: github.event.label.name,
+              repository: context.repo,
+              issue: context.issue,
+              payload: github.context.payload
+            });
+            
             await github.rest.issues.addAssignees({
               owner: context.repo.owner,
               repo: context.repo.repo,
