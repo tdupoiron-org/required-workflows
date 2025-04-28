@@ -2,14 +2,43 @@ name: PR Description Update
 
 on:
   pull_request:
+    types: [labeled, unlabeled, edited]
 
 jobs:
   pr-edited:
     runs-on: ubuntu-latest
+    env:
+      ACTIONS_RUNNER_DEBUG: true
+      ACTIONS_STEP_DEBUG: true
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Print Hello World
-      run: echo "The PR was edited"
+    - name: Process PR
+      uses: actions/github-script@v7.0.1
+      with:
+        script: |
+          console.log('Debug - Event context:', {
+            eventName: context.eventName,
+            repository: context.repo,
+            issue: context.issue,
+            payload: context.payload
+          });
+          
+          // Only try to access label information if this is a labeled event
+          if (context.eventName === 'pull_request' && context.payload.action === 'labeled') {
+            const label = context.payload.label.name;
+            console.log('Label added:', label);
+            
+            if (label === 'security') {
+              await github.rest.issues.addAssignees({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                assignees: ['tdupoiron']
+              });
+              console.log('Assignee added successfully');
+            }
+          }
+        github-token: ${{ secrets.GITHUB_TOKEN }}
